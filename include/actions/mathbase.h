@@ -19,7 +19,7 @@ public:
   void set_kp(double kp);
   void set_ki(double ki);
   void set_kd(double kd);
-  double calc(double err);
+  double calc(double err, double dt = 1);
 };
 
 //within

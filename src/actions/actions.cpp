@@ -103,12 +103,21 @@ bool DriveAction::act(void) {
 
   Drivetrain.drive(forward, velocity, percent);
 
+  timer time;
+  time.clear();
+  double last_time = time.time(msec);
+
   while (fabs(error) > 0.5 && (! force_exit)) {
-    wait(1, msec);
-    current += Drivetrain.distance(velocity, 1, msec);
+    double current = time.time(msec);
+    if (current <= last_time) {
+      continue;
+    }
+
+    double dt = current;
+    current += Drivetrain.distance(velocity, dt, msec);
     
     error = target - current;
-    raw_factor = pid.calc(error);
+    raw_factor = pid.calc(error, dt);
     factor = abs_within(MIN_SPEED, MAX_SPEED, raw_factor);
     velocity = factor * VELOCITY_PERCENT;
 

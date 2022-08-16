@@ -34,13 +34,13 @@ void PID::set_kd(double kd) {
 
 #define ERR_MIN (0.01)
 
-double PID::calc(double err) {
+double PID::calc(double err, double dt) {
   INIT_DEBUG();
 
   if (fabs(err) <= (max_errsum / 10)) {
-    errsum += err;
+    errsum += err * dt;
   }
-  double d_err = (err - last_err);
+  double d_err = (err - last_err) / dt;
   last_err = err;
 
   if (fabs(err) < ERR_MIN) {
