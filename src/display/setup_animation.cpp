@@ -1,5 +1,5 @@
-#include "setup_animation.h"
-#include "irobot_config.h"
+#include <display/setup_animation.h>
+#include <devices/irobot_config.h>
 
 //#define SHOW_ANIMATION_ENABLE
 

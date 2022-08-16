@@ -1,30 +1,31 @@
-#include "irobot_config.h"
-#include "actions.h"
-#include "debug.h"
+#include <devices/irobot_config.h>
+#include <display/debug.h>
+#include <actions/actions.h>
 
-//-----------------
+#ifdef TEST_PID_ENABLE
 
-#define ACTION_NUM (10)
+#pragma region values
 
+#pragma region tables
 
+//行为
 //                                       kp       ki      kd    max error
+#define ACTION_NUM (10)
 Action *ALL_ACTION[ACTION_NUM] = {
-  new RotateAction(right  , 45.00000, 0.12200, 0.01010, 0.01000, 45.00000),
-  new DriveAction (forward, 02.82843, 0.00000, 0.00010, 0.00000,  2.82843),
-  new RotateAction(left   , 78.69007, 0.00000, 0.00010, 0.00000, 78.69007),
-  new RotateAction(right  , 78.69007, 0.00000, 0.00010, 0.00000, 78.69007),
-  new DriveAction (forward, 00.70711, 0.00000, 0.00010, 0.00000,  0.70711),
-  new RotateAction(left   , 90.00000, 0.00000, 0.00010, 0.00000, 90.00000),
-  new RotateAction(right  , 90.00000, 0.00000, 0.00010, 0.00000, 90.00000),
-  new DriveAction (forward, 02.12132, 0.00000, 0.00010, 0.00000,  2.12132),
-  new RotateAction(left   , 23.19859, 0.00000, 0.00010, 0.00000, 23.19859),
-  new RotateAction(right  , 23.19859, 0.00000, 0.00010, 0.00000, 23.19859)
+  new RotateAction(right  , 45.00000, 0.12200, 0.00000, 0.01000, 45.00000),
+  new DriveAction (forward, 02.82843, 0.00000, 0.00000, 0.00000,  2.82843),
+  new RotateAction(left   , 78.69007, 0.00000, 0.00000, 0.00000, 78.69007),
+  new RotateAction(right  , 78.69007, 0.00000, 0.00000, 0.00000, 78.69007),
+  new DriveAction (forward, 00.70711, 0.00000, 0.00000, 0.00000,  0.70711),
+  new RotateAction(left   , 90.00000, 0.00000, 0.00000, 0.00000, 90.00000),
+  new RotateAction(right  , 90.00000, 0.00000, 0.00000, 0.00000, 90.00000),
+  new DriveAction (forward, 02.12132, 0.00000, 0.00000, 0.00000,  2.12132),
+  new RotateAction(left   , 23.19859, 0.00000, 0.00000, 0.00000, 23.19859),
+  new RotateAction(right  , 23.19859, 0.00000, 0.00000, 0.00000, 23.19859)
 };
 
-int cur_action = 0;
-
+//变化量
 #define DELTA_NUM (10)
-
 double deltas[DELTA_NUM] = {
   0.0001, 0.0005,
   0.0010, 0.0050,
@@ -32,11 +33,11 @@ double deltas[DELTA_NUM] = {
   0.1000, 0.5000,
   1.0000, 5.0000
 };
-int cur_delta = 10;
 
-double delta = 0.100000;
-bool running = false;
+#pragma endregion
+#pragma region state
 
+//调整模式
 namespace Modes {
   constexpr int START = 0;
   constexpr int ACTION = 0;
@@ -47,10 +48,18 @@ namespace Modes {
   constexpr int LAST = 4;
 };
 
+//当前行为
+int cur_action = 0;
+int cur_delta = 2;
+double delta = 0.0010;
+bool running = false;
 int mode = Modes::ACTION;
 
-//-----------------
+#pragma endregion
 
+#pragma endregion
+#pragma region print
+//打印信息
 void printPIDArgs(void) {
   INIT_DEBUG();
 
@@ -97,8 +106,10 @@ void printScreen() {
   printState();
 }
 
-//==========================================================
+#pragma endregion
+#pragma region regulation
 
+#pragma region action
 void upAction(void) {
   cur_action += 1;
   if (cur_action >= ACTION_NUM) {
@@ -116,9 +127,8 @@ void downAction(void) {
   
   printScreen();
 }
-
-//-----------------------
-
+#pragma endregion
+#pragma region kp
 void upKp(void) {
   PID *pid = ALL_ACTION[cur_action]->getPID();
   pid->set_kp(pid->get_kp() + delta);
@@ -132,7 +142,8 @@ void downKp(void) {
 
   printScreen();
 }
-
+#pragma endregion
+#pragma region ki
 void upKi(void) {
   PID *pid = ALL_ACTION[cur_action]->getPID();
   pid->set_ki(pid->get_ki() + delta);
@@ -146,7 +157,8 @@ void downKi(void) {
 
   printScreen();
 }
-
+#pragma endregion
+#pragma region kd
 void upKd(void) {
   PID *pid = ALL_ACTION[cur_action]->getPID();
   pid->set_kd(pid->get_kd() + delta);
@@ -160,7 +172,8 @@ void downKd(void) {
 
   printScreen();
 }
-
+#pragma endregion
+#pragma region delta
 void upDelta(void) {
   cur_delta ++;
   if (cur_delta >= DELTA_NUM) {
@@ -181,8 +194,8 @@ void downDelta(void) {
   printScreen();
 }
 
-//------------------------------------------------------------
-
+#pragma endregion
+#pragma region switch
 void doUp(void) {
   if (mode == Modes::ACTION) {
     upAction();
@@ -218,9 +231,9 @@ void doDown(void) {
     downDelta();
   }
 }
+#pragma endregion
 
-//------------------------------------------------------------
-
+#pragma region mode
 void upMode(void) {
   mode ++;
   if (mode > Modes::LAST) {
@@ -236,9 +249,9 @@ void downMode(void) {
   }
   printScreen();
 }
-
-//==========================================================
-
+#pragma endregion
+#pragma endregion
+#pragma region acts
 void act(void) {
   running = true;
   printScreen();
@@ -249,7 +262,7 @@ void act(void) {
 }
 
 void force_stop(void) {
-  Drivetrain.stop(hold);
+  Drivetrain.stop(brake); //刹车
   force_exit = true;
 }
 
@@ -263,3 +276,12 @@ void register_controllers(void) {
 
   printScreen();
 }
+
+#pragma endregion
+
+#else
+
+void register_controllers(void) {
+}
+
+#endif

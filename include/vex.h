@@ -12,15 +12,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "v5.h"
-#include "v5_vcs.h"
+#include <v5.h>
+#include <v5_vcs.h>
 
-#include "robot-config.h"
+#include <robot-config.h>
 
+//速率
 #define VELOCITY_PERCENT (100)
+
+//等待时间
 #define WAIT_TIME (20)
 #define WAIT_TIME_S (0.02)
 
+#define TEST_PID_ENABLE
+// #define AUTONOMOUS_ENABLsE
+// #define MANUAL_ENABLE
+
+//强制退出标志
 extern bool force_exit;
 
 #define waitUntil(condition)                                                   \

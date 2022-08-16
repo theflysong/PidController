@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vex.h"
-#include "drivetrain.h"
+#include <vex.h>
+#include <devices/drivetrain.h>
 
 extern robot::Drivetrain Drivetrain;

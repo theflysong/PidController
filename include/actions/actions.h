@@ -1,32 +1,20 @@
 #pragma once
 
-#include "irobot_config.h"
+#include <devices/irobot_config.h>
+#include <actions/mathbase.h>
 
-class PID {
-protected:
-  double errsum;
-  double last_err;
-  double max_errsum;
-  double kp;
-  double ki;
-  double kd;
-public:
-  PID(double kp, double ki, double kd, double max_errsum);
-  double get_kp(void);
-  double get_ki(void);
-  double get_kd(void);
-  void set_kp(double kp);
-  void set_ki(double ki);
-  void set_kd(double kd);
-  double calc(double err);
-};
+#pragma region actions
 
+//行为基类
 class Action {
 public:
   virtual bool act(void) = 0;
   virtual PID *getPID(void) = 0;
 };
 
+#pragma endregion
+
+//旋转行为
 class RotateAction : public Action {
 protected:
   turnType dir;
@@ -38,6 +26,7 @@ public:
   virtual PID *getPID(void) override final;
 };
 
+//移动行为
 class DriveAction : public Action {
 protected:
   directionType dir;
@@ -49,5 +38,4 @@ public:
   virtual PID *getPID(void) override final;
 };
 
-double abs_within(double min, double max, double val);
-double within(double min, double max, double val);
+#pragma endregion

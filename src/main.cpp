@@ -18,11 +18,11 @@
 // Inertial             inertial      13              
 // ---- END VEXCODE CONFIGURED DEVICES ----
 
-#include "irobot_config.h"
-#include "actions.h"
-#include "setup_animation.h"
-#include "debug.h"
-#include "PIDTest.h"
+#include <devices/irobot_config.h>
+#include <actions/actions.h>
+#include <display/setup_animation.h>
+#include <display/debug.h>
+#include <PIDTest.h>
 
 using namespace vex;
 
